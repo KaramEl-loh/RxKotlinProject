@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RxKotlin</string>
+    <string name="vehicle_status_banner_message">Vehicle Status</string>
+</resources>

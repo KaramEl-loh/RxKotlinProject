@@ -28,11 +28,11 @@ class LottieButton(
 
 
 	init {
-		button?.text = commands.friendlyName
+		button?.text = commands.friendlyName.message
 		progress?.speed = 0.9f
 		(rootView as? LinearLayout)?.addView(lottieButton)
 		lottieButton.layoutParams =
-			LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, weight)
+			LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.WRAP_CONTENT, weight)
 	}
 
 	private fun resumeAnimation() {

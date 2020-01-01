@@ -7,11 +7,13 @@ import com.example.myapplication.R
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
 
     private var commandButtons: List<LottieButton> = emptyList()
+    private lateinit var banner:Banner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +23,10 @@ class MainActivity : AppCompatActivity() {
             LottieButton(this, Commands.START, command_buttons, 0.15f),
             LottieButton(this, Commands.UNLOCK, command_buttons, 0.1f)
         )
+
+        banner = Banner(this,banner_container)
+
+
     }
 
     override fun onResume() {
@@ -29,14 +35,16 @@ class MainActivity : AppCompatActivity() {
         Observable.fromIterable(commandButtons)
             .flatMap { it.pressAndHoldObservable }
             .subscribeBy(
-                onNext = this::displayLongPressWarningMessage
+               onNext = this::displayWarningBannerMessage
             ).disposedOnPause(this)
     }
 
-    private fun displayLongPressWarningMessage(shouldSendCommand: Pair<Boolean, Commands>) =
-        Toast.makeText(
-            this,
-            (if (shouldSendCommand.first) "${shouldSendCommand.second.friendlyName} sent to Vehicle" else "Press And Hold"),
-            Toast.LENGTH_SHORT
-        ).show()
+
+    private fun displayWarningBannerMessage(shouldSendCommand: Pair<Boolean, Commands>)
+    {
+        banner.showBanner(shouldSendCommand)
+        banner.bannerObservable.subscribe {banner.hideBanner()}.disposedOnPause(this)
+
+    }
+
 }

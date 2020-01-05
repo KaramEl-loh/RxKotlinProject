@@ -1,19 +1,17 @@
 package com.example.myapplication.view
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.R
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
 
     private var commandButtons: List<LottieButton> = emptyList()
-    private lateinit var banner:Banner
+    private lateinit var banner: Banner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +21,7 @@ class MainActivity : AppCompatActivity() {
             LottieButton(this, Commands.START, command_buttons, 0.15f),
             LottieButton(this, Commands.UNLOCK, command_buttons, 0.1f)
         )
-
-        banner = Banner(this,banner_container)
-
+        banner = Banner(this, banner_container)
 
     }
 
@@ -34,17 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         Observable.fromIterable(commandButtons)
             .flatMap { it.pressAndHoldObservable }
+            .doOnNext(banner::showBanner)
+            .switchMap {
+                banner.hideBannerObservable
+            }
             .subscribeBy(
-               onNext = this::displayWarningBannerMessage
+                onNext = { banner.hideBanner() }
+
             ).disposedOnPause(this)
     }
 
-
-    private fun displayWarningBannerMessage(shouldSendCommand: Pair<Boolean, Commands>)
-    {
-        banner.showBanner(shouldSendCommand)
-        banner.bannerObservable.subscribe {banner.hideBanner()}.disposedOnPause(this)
-
-    }
 
 }

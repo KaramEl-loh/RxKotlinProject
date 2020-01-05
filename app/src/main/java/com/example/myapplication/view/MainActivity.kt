@@ -1,7 +1,6 @@
 package com.example.myapplication.view
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.R
 import io.reactivex.Observable
@@ -12,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var commandButtons: List<LottieButton> = emptyList()
+    private lateinit var banner: Banner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
             LottieButton(this, Commands.START, command_buttons, 0.15f),
             LottieButton(this, Commands.UNLOCK, command_buttons, 0.1f)
         )
+        banner = Banner(this, banner_container)
+
     }
 
     override fun onResume() {
@@ -28,15 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         Observable.fromIterable(commandButtons)
             .flatMap { it.pressAndHoldObservable }
+            .doOnNext(banner::showBanner)
+            .switchMap {
+                banner.hideBannerObservable
+            }
             .subscribeBy(
-                onNext = this::displayLongPressWarningMessage
+                onNext = { banner.hideBanner() }
+
             ).disposedOnPause(this)
     }
 
-    private fun displayLongPressWarningMessage(shouldSendCommand: Pair<Boolean, Commands>) =
-        Toast.makeText(
-            this,
-            (if (shouldSendCommand.first) "${shouldSendCommand.second.friendlyName} sent to Vehicle" else "Press And Hold"),
-            Toast.LENGTH_SHORT
-        ).show()
+
 }

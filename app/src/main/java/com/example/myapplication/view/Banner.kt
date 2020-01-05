@@ -47,7 +47,7 @@ class Banner(context: Context, parentView: ViewGroup) {
         ?.filter { it == LongPressState.END }
 
     val hideBannerObservable: Observable<Any> = Observable.ambArray(timerObservable, cancelButtonObservable)
-        .log("Hide Banner Observable")
+        .log()
         .observeOn(AndroidSchedulers.mainThread())
 
     fun hideBanner() {

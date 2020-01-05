@@ -57,7 +57,7 @@ class LottieButton(
                         Observable.ambArray(touchUpObservable.map { false }, timer.map { true })
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnNext { pauseAnimation() }
-                            .map { Pair(it, commands) }.log("Lottie Button Observable")
+                            .map { Pair(it, commands) }.log()
 
                     }
             }
